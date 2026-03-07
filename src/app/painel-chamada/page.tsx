@@ -11,6 +11,12 @@ interface WaitingTicket {
   issued_at: string;
 }
 
+interface CalledTicket {
+  prefix: string;
+  ticket_number: number;
+  priority_type: 'normal' | 'preferencial';
+}
+
 async function getWaitingTickets() {
   const supabase = createSupabaseServerClient();
 
@@ -38,8 +44,38 @@ async function getWaitingTickets() {
   return { error: null, tickets: (tickets ?? []) as WaitingTicket[] };
 }
 
+async function getCurrentCalledTicket() {
+  const supabase = createSupabaseServerClient();
+
+  const { data: latestCall, error: latestCallError } = await supabase
+    .from('calls')
+    .select('ticket_id')
+    .order('called_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (latestCallError || !latestCall?.ticket_id) {
+    return null;
+  }
+
+  const { data: ticket, error: ticketError } = await supabase
+    .from('tickets')
+    .select('prefix,ticket_number,priority_type')
+    .eq('id', latestCall.ticket_id)
+    .maybeSingle();
+
+  if (ticketError || !ticket) {
+    return null;
+  }
+
+  return ticket as CalledTicket;
+}
+
 export default async function PainelChamadaPage() {
-  const { error, tickets } = await getWaitingTickets();
+  const [{ error, tickets }, currentCalledTicket] = await Promise.all([
+    getWaitingTickets(),
+    getCurrentCalledTicket(),
+  ]);
 
   const nextNormal = tickets.find((ticket) => ticket.priority_type === 'normal');
   const nextPriority = tickets.find((ticket) => ticket.priority_type === 'preferencial');
@@ -50,6 +86,15 @@ export default async function PainelChamadaPage() {
         title="Painel de Chamada"
         description="Senhas aguardando na fila GERAL, com visual claro para TV e monitor de sala de espera."
       />
+
+      <Card className="border-brand-200 bg-brand-50 text-center">
+        <h2 className="text-2xl font-bold text-brand-900">Agora chamando</h2>
+        <p className="mt-3 text-7xl font-extrabold tracking-widest text-brand-700" aria-live="polite">
+          {currentCalledTicket
+            ? formatTicketCode(currentCalledTicket.prefix, currentCalledTicket.ticket_number)
+            : '---'}
+        </p>
+      </Card>
 
       {error ? (
         <Card role="alert" className="border-rose-200 bg-rose-50">
