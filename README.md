@@ -19,23 +19,28 @@ src/
     medico/
     painel-chamada/
     totem/
+      actions.ts
     globals.css
     layout.tsx
     page.tsx
   components/
     features/
+      totem-ticket-form.tsx
     layout/
     ui/
   lib/
     supabase/
+      client.ts
+      env.ts
+      server.ts
     utils.ts
   styles/
     theme.css
 ```
 
-## Módulos iniciais criados
+## Módulos iniciais
 
-- Totem do paciente (`/totem`)
+- Totem do paciente (`/totem`) ✅ com geração real de senha no Supabase
 - Painel de chamada (`/painel-chamada`)
 - Tela do atendente (`/atendente`)
 - Tela do médico (`/medico`)
@@ -53,8 +58,17 @@ Preencha:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (recomendado para server actions que persistem dados)
 
-Essas variáveis são lidas em `src/lib/supabase/env.ts` e utilizadas em `src/lib/supabase/client.ts`.
+## Fluxo implementado no `/totem`
+
+1. Paciente escolhe **fila normal** ou **fila preferencial**.
+2. Ao clicar em **Gerar senha**, o sistema:
+   - busca `queues.code = 'GERAL'`;
+   - consulta o último ticket do dia por fila + prioridade;
+   - gera o próximo número sequencial;
+   - grava em `tickets` com status `aguardando`.
+3. Exibe senha em destaque (`N001`, `P001`) e mensagem: **“Aguarde sua chamada no painel.”**
 
 ## Como rodar localmente
 
@@ -77,13 +91,6 @@ npm run build
 2. Importe o projeto na Vercel.
 3. Configure as variáveis de ambiente do Supabase no dashboard da Vercel.
 4. Faça deploy.
-
-## Preparado para evolução futura
-
-- Integração com Supabase Auth (papéis: atendente, médico, admin)
-- Persistência de filas e tickets em Postgres
-- Atualizações em tempo real para painel de chamada
-- Observabilidade e métricas operacionais por unidade
 
 ## Próxima feature recomendada
 
