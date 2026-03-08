@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FilaFácil Acessível - Dashboard Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#005fb8",
+                "background-light": "#f5f7f8",
+                "background-dark": "#0f1923",
+              },
+              fontFamily: {
+                "display": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex flex-col min-h-screen">
+<!-- Top Navigation -->
+<header class="bg-white dark:bg-slate-900 border-b border-primary/10 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined block">medical_services</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-primary leading-tight">FilaFácil Acessível</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Analytics Admin</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-500 hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-primary/10 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+<div class="h-8 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+<div class="flex items-center gap-2 pl-2">
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden border border-primary/20">
+<img alt="Dr. Silva Profile" class="w-full h-full object-cover" data-alt="Profile picture of a male medical professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuUmMt8CL7bF7WapLrnF5uf9yXbJ-SuNU3Tu3fVuIohf-SeGENkAc5Mh6Gc2ybvEr1vojcABPRelL3UvTvZnv6duj6EbwjRRNfnhKW2Izko_HUcudsDAA-cQMS9iyWpyntJOUyU0hPZHyMr84cIowSq9VtXmFqHu1_SijvS0OYegYe1Putby3B_BsIGXIIoajlSfyZuMzGDSz_jP4I1AKfYY1SkgHSwGr9DrZE8PrNJ6kowqv8-vwqbeO6EB4Bq-djfE2rq0Xd8aQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6">
+<!-- Tabs Navigation -->
+<div class="border-b border-slate-200 dark:border-slate-800">
+<nav class="flex gap-8 overflow-x-auto no-scrollbar">
+<a class="pb-3 px-1 border-b-2 border-primary text-primary font-semibold text-sm whitespace-nowrap" href="#">Visão Geral</a>
+<a class="pb-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-primary transition-colors font-medium text-sm whitespace-nowrap" href="#">Relatórios Detalhados</a>
+<a class="pb-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-primary transition-colors font-medium text-sm whitespace-nowrap" href="#">Desempenho da Equipe</a>
+<a class="pb-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-primary transition-colors font-medium text-sm whitespace-nowrap" href="#">Satisfação do Paciente</a>
+</nav>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Atendimentos</span>
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-sm">groups</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<h3 class="text-2xl font-bold">1,284</h3>
+<span class="text-emerald-500 text-xs font-bold flex items-center bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs">trending_up</span> 12%
+                        </span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tempo Médio Espera</span>
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-sm">avg_time</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<h3 class="text-2xl font-bold">14.5 min</h3>
+<span class="text-orange-500 text-xs font-bold flex items-center bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs">trending_down</span> 2%
+                        </span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Pacientes Ativos</span>
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-sm">person_play</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<h3 class="text-2xl font-bold">42</h3>
+<span class="text-slate-400 text-xs font-medium">Capacidade 85%</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Taxa de Satisfação</span>
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-sm">thumb_up</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<h3 class="text-2xl font-bold">92%</h3>
+<span class="text-emerald-500 text-xs font-bold flex items-center bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-xs">arrow_upward</span> 5.4%
+                        </span>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Line Chart: Average Waiting Time -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h4 class="font-bold text-slate-800 dark:text-slate-200">Tempo Médio de Espera</h4>
+<p class="text-xs text-slate-500">Últimos 7 dias em minutos</p>
+</div>
+<select class="text-xs font-medium bg-slate-50 dark:bg-slate-800 border-none rounded-lg focus:ring-primary">
+<option>Semanal</option>
+<option>Mensal</option>
+</select>
+</div>
+<div class="relative h-[240px] w-full">
+<svg fill="none" height="200" preserveaspectratio="none" viewbox="-3 0 478 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 109C18 109 18 21 36 21C54 21 54 41 72 41C90 41 90 93 108 93C127 93 127 33 145 33C163 33 163 101 181 101C199 101 199 61 217 61C236 61 236 45 254 45C272 45 272 121 290 121C308 121 308 149 326 149C344 149 344 1 363 1C381 1 381 81 399 81C417 81 417 129 435 129C453 129 453 25 472 25V149H0V109Z" fill="url(#wait_gradient)"></path>
+<path d="M0 109C18 109 18 21 36 21C54 21 54 41 72 41C90 41 90 93 108 93C127 93 127 33 145 33C163 33 163 101 181 101C199 101 199 61 217 61C236 61 236 45 254 45C272 45 272 121 290 121C308 121 308 149 326 149C344 149 344 1 363 1C381 1 381 81 399 81C417 81 417 129 435 129C453 129 453 25 472 25" stroke="#005fb8" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="wait_gradient" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="#005fb8" stop-opacity="0.15"></stop>
+<stop offset="1" stop-color="#005fb8" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="flex justify-between mt-4 text-[11px] font-bold text-slate-400 uppercase">
+<span>Seg</span>
+<span>Ter</span>
+<span>Qua</span>
+<span>Qui</span>
+<span>Sex</span>
+<span>Sáb</span>
+<span>Dom</span>
+</div>
+</div>
+</div>
+<!-- Bar Chart: Peak Hours -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h4 class="font-bold text-slate-800 dark:text-slate-200">Picos de Atendimento</h4>
+<p class="text-xs text-slate-500">Fluxo médio por horário (hoje)</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 bg-primary rounded-sm"></span>
+<span class="text-xs font-medium text-slate-500">Pacientes/h</span>
+</div>
+</div>
+<div class="flex items-end justify-between h-[200px] w-full gap-2 px-2">
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/10 rounded-t-lg relative group" style="height: 15%">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">8</div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">08h</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/30 rounded-t-lg relative group" style="height: 40%">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">22</div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">10h</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/50 rounded-t-lg relative group" style="height: 65%">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">45</div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">12h</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary rounded-t-lg relative group" style="height: 100%">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">78</div>
+</div>
+<span class="text-[10px] font-bold text-primary">14h</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/80 rounded-t-lg relative group" style="height: 85%">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">64</div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">16h</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/40 rounded-t-lg relative group" style="height: 50%">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">30</div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">18h</span>
+</div>
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full bg-primary/20 rounded-t-lg relative group" style="height: 25%">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">12</div>
+</div>
+<span class="text-[10px] font-bold text-slate-400">20h</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Distribution and Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Service Type Distribution -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<h4 class="font-bold text-slate-800 dark:text-slate-200 mb-6">Distribuição por Serviço</h4>
+<div class="space-y-4">
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-medium mb-1">
+<span class="text-slate-600 dark:text-slate-400">Clínica Geral</span>
+<span class="text-primary font-bold">45%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-medium mb-1">
+<span class="text-slate-600 dark:text-slate-400">Pediatria</span>
+<span class="text-primary font-bold">28%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full opacity-70" style="width: 28%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-medium mb-1">
+<span class="text-slate-600 dark:text-slate-400">Exames Laboratoriais</span>
+<span class="text-primary font-bold">15%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full opacity-50" style="width: 15%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-medium mb-1">
+<span class="text-slate-600 dark:text-slate-400">Ortopedia</span>
+<span class="text-primary font-bold">12%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full opacity-30" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity/Queue Status -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<h4 class="font-bold text-slate-800 dark:text-slate-200">Próximos Atendimentos</h4>
+<button class="text-xs font-bold text-primary hover:underline">Ver fila completa</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/50">
+<tr class="text-[11px] font-bold text-slate-400 uppercase">
+<th class="px-6 py-3">Senha</th>
+<th class="px-6 py-3">Paciente</th>
+<th class="px-6 py-3">Serviço</th>
+<th class="px-6 py-3">Espera</th>
+<th class="px-6 py-3">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50 dark:divide-slate-800">
+<tr class="text-sm">
+<td class="px-6 py-4 font-bold text-primary">A-142</td>
+<td class="px-6 py-4 font-medium">Maria S. Oliveira</td>
+<td class="px-6 py-4 text-slate-500">Clínica Geral</td>
+<td class="px-6 py-4 text-slate-500">12 min</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold rounded uppercase">Aguardando</span>
+</td>
+</tr>
+<tr class="text-sm">
+<td class="px-6 py-4 font-bold text-primary">P-058</td>
+<td class="px-6 py-4 font-medium">João Gabriel Duarte</td>
+<td class="px-6 py-4 text-slate-500">Pediatria</td>
+<td class="px-6 py-4 text-slate-500">08 min</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-bold rounded uppercase">Prioritário</span>
+</td>
+</tr>
+<tr class="text-sm">
+<td class="px-6 py-4 font-bold text-primary">E-012</td>
+<td class="px-6 py-4 font-medium">Carlos Ed. Ramos</td>
+<td class="px-6 py-4 text-slate-500">Exames</td>
+<td class="px-6 py-4 text-slate-500">24 min</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold rounded uppercase">Aguardando</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile Style / Floating) -->
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-4 pb-3 pt-2 flex justify-around md:hidden z-20">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">group_work</span>
+<span class="text-[10px] font-medium">Filas</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-medium">Histórico</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Ajustes</span>
+</a>
+</div>
+<!-- Sidebar for Desktop (Alternative layout hint) -->
+<div class="hidden md:flex fixed left-0 top-0 bottom-0 w-20 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex-col items-center py-8 gap-10 z-20">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">health_and_safety</span>
+</div>
+<div class="flex flex-col gap-6">
+<a class="p-3 bg-primary/10 text-primary rounded-xl" href="#" title="Dashboard">
+<span class="material-symbols-outlined block">dashboard</span>
+</a>
+<a class="p-3 text-slate-400 hover:text-primary transition-colors" href="#" title="Filas">
+<span class="material-symbols-outlined block">group_work</span>
+</a>
+<a class="p-3 text-slate-400 hover:text-primary transition-colors" href="#" title="Histórico">
+<span class="material-symbols-outlined block">history</span>
+</a>
+<a class="p-3 text-slate-400 hover:text-primary transition-colors" href="#" title="Performance">
+<span class="material-symbols-outlined block">monitoring</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-6">
+<button class="p-3 text-slate-400 hover:text-primary transition-colors" title="Configurações">
+<span class="material-symbols-outlined block">settings</span>
+</button>
+</div>
+</div>
+<!-- Padding for sidebar desktop and bottom nav mobile -->
+<div class="md:pl-20 pb-20 md:pb-0"></div>
+</div>
+</body></html>

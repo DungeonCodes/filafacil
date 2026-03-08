@@ -1,0 +1,39 @@
+:root {
+  --background: #f0f8ff; /* medical.light */
+  --foreground: #0b2641; /* medical.dark */
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* FilaFácil Acessível System Globals */
+
+/* SVG Noise Overlay (as requested by Construct guidelines) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Base Interactions */
+.btn-magnetic {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.btn-magnetic:hover, .btn-magnetic:focus {
+  transform: scale(1.03);
+}
+
+/* Accessibility Guidelines focus state */
+:focus-visible {
+  outline: 4px solid #ffc107;
+  outline-offset: 4px;
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#005fb8",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header Section -->
+<header class="flex items-center bg-white dark:bg-slate-900 border-b border-primary/10 p-4 sticky top-0 z-10 shadow-sm">
+<div aria-hidden="true" class="flex size-12 shrink-0 items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">medical_services</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight flex-1 text-center pr-12">FilaFácil Acessível</h2>
+</header>
+<!-- Accessibility Controls -->
+<div class="p-4 @container">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-primary/20 bg-white dark:bg-slate-800 p-5 shadow-md">
+<div class="flex flex-col gap-1">
+<p class="text-lg font-bold leading-tight">Acessibilidade</p>
+<p class="text-slate-600 dark:text-slate-400 text-base font-normal">Ativar Alto Contraste para facilitar leitura</p>
+</div>
+<label class="relative flex h-[36px] w-[64px] cursor-pointer items-center rounded-full border-2 border-primary/20 bg-slate-100 dark:bg-slate-700 p-1 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full aspect-square rounded-full bg-white shadow-lg"></div>
+<input aria-label="Alternar alto contraste" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<main class="flex-1 px-4 pb-20">
+<div class="max-w-2xl mx-auto">
+<h1 class="text-slate-900 dark:text-white tracking-tight text-4xl font-extrabold leading-tight text-center pb-2 pt-6">Gerar Senha</h1>
+<p class="text-slate-600 dark:text-slate-400 text-lg font-medium leading-normal pb-8 text-center">Toque na opção desejada para retirar seu ticket:</p>
+<!-- Service Options -->
+<div class="grid gap-4">
+<!-- Option 1 -->
+<button class="flex items-center justify-between w-full p-6 bg-white dark:bg-slate-800 rounded-xl border-2 border-primary/10 hover:border-primary transition-colors text-left shadow-sm group">
+<div class="flex items-center gap-5">
+<div class="size-16 flex items-center justify-center bg-primary/10 text-primary rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-4xl">stethoscope</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold">Clínico Geral</h3>
+<p class="text-slate-500">Atendimento adulto geral</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-3xl text-primary/40">chevron_right</span>
+</button>
+<!-- Option 2 -->
+<button class="flex items-center justify-between w-full p-6 bg-white dark:bg-slate-800 rounded-xl border-2 border-primary/10 hover:border-primary transition-colors text-left shadow-sm group">
+<div class="flex items-center gap-5">
+<div class="size-16 flex items-center justify-center bg-primary/10 text-primary rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-4xl">child_care</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold">Pediatria</h3>
+<p class="text-slate-500">Atendimento infantil</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-3xl text-primary/40">chevron_right</span>
+</button>
+<!-- Option 3 -->
+<button class="flex items-center justify-between w-full p-6 bg-white dark:bg-slate-800 rounded-xl border-2 border-primary/10 hover:border-primary transition-colors text-left shadow-sm group">
+<div class="flex items-center gap-5">
+<div class="size-16 flex items-center justify-center bg-primary/10 text-primary rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-4xl">biotech</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold">Exames</h3>
+<p class="text-slate-500">Coleta e diagnósticos</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-3xl text-primary/40">chevron_right</span>
+</button>
+</div>
+<!-- Generated Ticket Preview (Active State Example) -->
+<div class="mt-12 p-8 bg-white dark:bg-slate-800 border-4 border-dashed border-primary/30 rounded-2xl text-center relative overflow-hidden shadow-xl">
+<div class="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+<p class="text-primary font-bold uppercase tracking-[0.2em] mb-4">Sua Senha Gerada</p>
+<div class="text-7xl sm:text-9xl font-black text-slate-900 dark:text-white mb-6 tracking-tighter">
+                        CG-023
+                    </div>
+<div class="flex items-center justify-center gap-4 mb-8 text-slate-500 dark:text-slate-400 font-semibold text-lg">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined">schedule</span> 14:35</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined">calendar_today</span> 24/10/2023</span>
+</div>
+<div class="flex flex-col gap-3">
+<button aria-label="Ouvir Senha em Áudio" class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-5 rounded-xl text-xl flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-lg">
+<span class="material-symbols-outlined text-3xl">volume_up</span>
+                            OUVIR SENHA
+                        </button>
+<button aria-label="Imprimir Ticket" class="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">print</span>
+                            IMPRIMIR TICKET
+                        </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-primary/10 px-4 pb-3 pt-2 safe-area-inset-bottom">
+<div class="flex gap-2 max-w-lg mx-auto">
+<a aria-label="Início" class="flex flex-1 flex-col items-center justify-end gap-1 rounded-xl text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">home</span>
+</div>
+<p class="text-xs font-bold leading-normal tracking-[0.015em]">Início</p>
+</a>
+<a aria-label="Histórico de Senhas" class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">confirmation_number</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Senhas</p>
+</a>
+<a aria-label="Ajuda e Suporte" class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">help_center</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Ajuda</p>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

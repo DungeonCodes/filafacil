@@ -1,0 +1,40 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Linter
+      run: npm run lint
+
+    - name: Run TypeScript Check
+      run: npx tsc --noEmit
+
+    - name: Run Tests
+      run: npm run test
+
+    - name: Build Project
+      run: npm run build
+      env:
+        # Mock env vars for build process to not fail if Supabase keys are expected
+        NEXT_PUBLIC_SUPABASE_URL: "https://mock.supabase.co"
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: "mock-key"
