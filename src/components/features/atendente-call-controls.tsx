@@ -6,6 +6,8 @@ import { callNextTicketAction, type CallNextState } from '@/app/atendente/action
 
 const initialState: CallNextState = {};
 
+const counters = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010'];
+
 function CallButton({ priorityType, label }: { priorityType: 'normal' | 'preferencial'; label: string }) {
   const { pending } = useFormStatus();
 
@@ -28,8 +30,26 @@ export function AtendenteCallControls() {
   return (
     <form action={formAction} className="space-y-4" aria-describedby="call-help-text">
       <p id="call-help-text" className="text-base text-slate-600">
-        Escolha o tipo de chamada para avançar a fila de atendimento.
+        Selecione o guichê atual e o tipo de chamada para avançar a fila.
       </p>
+
+      <div className="space-y-2">
+        <label htmlFor="roomLabel" className="text-base font-semibold text-slate-900">
+          Guichê em atendimento
+        </label>
+        <select
+          id="roomLabel"
+          name="roomLabel"
+          defaultValue="Guichê 001"
+          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
+        >
+          {counters.map((counter) => (
+            <option key={counter} value={`Guichê ${counter}`}>
+              Guichê {counter}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="grid gap-3 md:grid-cols-2">
         <CallButton priorityType="normal" label="Chamar próxima normal" />

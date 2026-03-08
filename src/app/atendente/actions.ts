@@ -6,6 +6,19 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 type PriorityType = 'normal' | 'preferencial';
 
+const AVAILABLE_COUNTERS = [
+  'Guichê 001',
+  'Guichê 002',
+  'Guichê 003',
+  'Guichê 004',
+  'Guichê 005',
+  'Guichê 006',
+  'Guichê 007',
+  'Guichê 008',
+  'Guichê 009',
+  'Guichê 010',
+] as const;
+
 export interface CallNextState {
   error?: string;
   success?: string;
@@ -21,11 +34,25 @@ function parsePriorityType(formData: FormData): PriorityType | null {
   return null;
 }
 
+function parseRoomLabel(formData: FormData): string | null {
+  const roomLabel = formData.get('roomLabel');
+  if (typeof roomLabel !== 'string') {
+    return null;
+  }
+
+  return AVAILABLE_COUNTERS.includes(roomLabel as (typeof AVAILABLE_COUNTERS)[number]) ? roomLabel : null;
+}
+
 export async function callNextTicketAction(_prev: CallNextState, formData: FormData): Promise<CallNextState> {
   const priorityType = parsePriorityType(formData);
+  const roomLabel = parseRoomLabel(formData);
 
   if (!priorityType) {
     return { error: 'Selecione um tipo de chamada válido.' };
+  }
+
+  if (!roomLabel) {
+    return { error: 'Selecione um guichê válido antes de chamar a senha.' };
   }
 
   try {
@@ -72,7 +99,7 @@ export async function callNextTicketAction(_prev: CallNextState, formData: FormD
     const { error: callInsertError } = await supabase.from('calls').insert({
       ticket_id: nextTicket.id,
       called_at: new Date().toISOString(),
-      room_label: null,
+      room_label: roomLabel,
       called_by: null,
     });
 
@@ -85,7 +112,7 @@ export async function callNextTicketAction(_prev: CallNextState, formData: FormD
     revalidatePath('/painel-chamada');
 
     return {
-      success: `Senha ${formatTicketCode(nextTicket.prefix, nextTicket.ticket_number)} chamada com sucesso.`,
+      success: `Senha ${formatTicketCode(nextTicket.prefix, nextTicket.ticket_number)} chamada com sucesso no ${roomLabel}.`,
     };
   } catch {
     return { error: 'Falha de conexão com o serviço. Tente novamente em instantes.' };
