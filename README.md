@@ -82,3 +82,10 @@ Para colocar o projeto no ar, basta importar o repositório na Vercel e adiciona
 *   `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 O projeto conta com CI/CD no GitHub Actions já configurado em `.github/workflows/ci.yml`.
+
+## 🧭 Entendimento Técnico do Projeto
+
+Foi adicionado um documento de leitura técnica com o fluxo real implementado no código atual:
+
+- `docs/entendimento-do-repositorio.md`
+

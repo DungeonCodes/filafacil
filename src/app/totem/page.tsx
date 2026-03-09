@@ -16,17 +16,12 @@ export default function TotemPage() {
     setIsGenerating(true);
 
     try {
-      // Get the queue ID based on type (simulated here since we mock queues initially)
       const queueNames = {
-        'CG': 'Clínico Geral',
-        'PD': 'Pediatria',
-        'EX': 'Exames'
+        CG: 'Clínico Geral',
+        PD: 'Pediatria',
+        EX: 'Exames',
       };
 
-      // In a real app we'd fetch the queue by name. For now, we mock the ticket number logic
-      // to ensure uniqueness we'll use a random component or fetch the last one.
-      const randomId = Math.floor(Math.random() * 999).toString().padStart(3, '0');
-      const ticketNumber = `${type}-${randomId}`;
       const now = new Date();
 
       const { data: queueData } = await supabase
@@ -35,26 +30,48 @@ export default function TotemPage() {
         .eq('name', queueNames[type])
         .single();
 
-      if (queueData) {
-        const { error } = await supabase
-          .from('tickets')
-          .insert({
-            queue_id: queueData.id,
-            ticket_number: ticketNumber,
-            status: 'waiting'
-          });
+      if (!queueData) {
+        alert('Fila não encontrada para a especialidade selecionada.');
+        return;
+      }
 
-        if (error) {
-          console.error("Error creating ticket:", error);
-          alert("Erro ao gerar senha, tente novamente.");
-          return;
-        }
+      const { data: lastTicketData, error: lastTicketError } = await supabase
+        .from('tickets')
+        .select('ticket_number')
+        .eq('queue_id', queueData.id)
+        .eq('prefix', type)
+        .order('ticket_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (lastTicketError) {
+        console.error('Error fetching last ticket:', lastTicketError);
+        alert('Erro ao consultar fila, tente novamente.');
+        return;
+      }
+
+      const nextTicketNumber = Number(lastTicketData?.ticket_number ?? 0) + 1;
+      const displayTicket = `${type}-${String(nextTicketNumber).padStart(3, '0')}`;
+
+      const { error } = await supabase
+        .from('tickets')
+        .insert({
+          queue_id: queueData.id,
+          ticket_number: nextTicketNumber,
+          prefix: type,
+          status: 'waiting',
+        });
+
+      if (error) {
+        console.error('Error creating ticket:', error);
+        alert('Erro ao gerar senha, tente novamente.');
+        return;
       }
 
       setGeneratedTicket({
-        number: ticketNumber,
+        number: displayTicket,
         time: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        date: now.toLocaleDateString('pt-BR')
+        date: now.toLocaleDateString('pt-BR'),
       });
 
     } catch (e) {
