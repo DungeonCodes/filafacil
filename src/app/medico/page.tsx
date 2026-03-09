@@ -10,6 +10,7 @@ type TicketRecord = {
   id: string;
   ticket_number: string;
   status: string;
+  called_at?: string;
   created_at?: string;
 };
 
@@ -18,6 +19,7 @@ type CallRecord = {
   called_at: string;
   room_label?: string | null;
   ticket_id?: string;
+  called_by?: string | null;
   tickets?: { ticket_number: string } | { ticket_number: string }[] | null;
 };
 
@@ -45,23 +47,32 @@ export default function MedicoPage() {
     return (data as { id: string } | null)?.id ?? null;
   };
 
-  const fetchNextTicket = async (queueId: string) => {
-    const { data } = await supabase
-      .from('tickets')
-      .select('id,ticket_number,status,created_at')
-      .eq('queue_id', queueId)
-      .eq('status', 'waiting')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+  const getDoctorCalledTicketIds = async () => {
+    const { data } = await supabase.from('calls').select('ticket_id').eq('called_by', 'Médico');
+    return new Set(((data as Array<{ ticket_id?: string }>) ?? []).map((call) => call.ticket_id).filter(Boolean));
+  };
 
-    return (data as TicketRecord | null) ?? null;
+  const fetchNextTicket = async (queueId: string) => {
+    const [calledTicketsResult, doctorCalledIds] = await Promise.all([
+      supabase
+        .from('tickets')
+        .select('id,ticket_number,status,called_at,created_at')
+        .eq('queue_id', queueId)
+        .eq('status', 'called')
+        .order('called_at', { ascending: true })
+        .order('created_at', { ascending: true })
+        .limit(50),
+      getDoctorCalledTicketIds(),
+    ]);
+
+    const calledTickets = (calledTicketsResult.data as TicketRecord[]) ?? [];
+    return calledTickets.find((ticket) => !doctorCalledIds.has(ticket.id)) ?? null;
   };
 
   const fetchRecentCalls = async () => {
     const { data } = await supabase
       .from('calls')
-      .select('id,called_at,room_label,ticket_id,tickets(ticket_number)')
+      .select('id,called_at,room_label,called_by,ticket_id,tickets(ticket_number)')
       .eq('room_label', roomLabel)
       .order('called_at', { ascending: false })
       .limit(5);
@@ -102,7 +113,7 @@ export default function MedicoPage() {
 
       const ticket = await fetchNextTicket(queueId);
       if (!ticket) {
-        setError(`Não há senha aguardando para ${specialty}.`);
+        setError(`Não há senha pronta para consultório em ${specialty}.`);
         return;
       }
 
@@ -110,7 +121,7 @@ export default function MedicoPage() {
         .from('tickets')
         .update({ status: 'called', called_at: new Date().toISOString() })
         .eq('id', ticket.id)
-        .eq('status', 'waiting');
+        .eq('status', 'called');
 
       if (updateError) {
         setError('Não foi possível atualizar o status da senha.');
