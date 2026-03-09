@@ -23,11 +23,8 @@ export default function TotemPage() {
         'EX': 'Exames'
       };
 
-      // In a real app we'd fetch the queue by name. For now, we mock the ticket number logic
-      // to ensure uniqueness we'll use a random component or fetch the last one.
-      const randomId = Math.floor(Math.random() * 999).toString().padStart(3, '0');
-      const ticketNumber = `${type}-${randomId}`;
       const now = new Date();
+      const prefix = type;
 
       const { data: queueData } = await supabase
         .from('queues')
@@ -35,24 +32,42 @@ export default function TotemPage() {
         .eq('name', queueNames[type])
         .single();
 
-      if (queueData) {
-        const { error } = await supabase
-          .from('tickets')
-          .insert({
-            queue_id: queueData.id,
-            ticket_number: ticketNumber,
-            status: 'waiting'
-          });
+      if (!queueData) {
+        alert('Fila não encontrada para a especialidade selecionada.');
+        return;
+      }
 
-        if (error) {
-          console.error("Error creating ticket:", error);
-          alert("Erro ao gerar senha, tente novamente.");
-          return;
-        }
+      const { data: lastTicket } = await supabase
+        .from('tickets')
+        .select('ticket_number')
+        .eq('queue_id', queueData.id)
+        .eq('prefix', prefix)
+        .order('ticket_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const nextNumber = (lastTicket?.ticket_number ?? 0) + 1;
+      const ticketNumber = nextNumber;
+      const displayTicket = `${prefix}-${String(nextNumber).padStart(3, '0')}`;
+
+      const { error } = await supabase
+        .from('tickets')
+        .insert({
+          queue_id: queueData.id,
+          ticket_number: ticketNumber,
+          prefix: prefix,
+          priority_type: 'normal',
+          status: 'aguardando',
+        });
+
+      if (error) {
+        console.error('Error creating ticket:', error);
+        alert('Erro ao gerar senha, tente novamente.');
+        return;
       }
 
       setGeneratedTicket({
-        number: ticketNumber,
+        number: displayTicket,
         time: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         date: now.toLocaleDateString('pt-BR')
       });
