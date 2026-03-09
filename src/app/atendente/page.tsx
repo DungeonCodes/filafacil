@@ -70,14 +70,7 @@ export default function AtendentePage() {
 
       if (callError) throw callError;
 
-      // Finish previously called ticket (optional logic, setting older to finished when a new one is called)
-      if (currentTicket) {
-        await supabase
-          .from('tickets')
-          .update({ status: 'finished' })
-          .eq('id', currentTicket.id);
-      }
-
+      // Keep previously called tickets available for downstream medical flow.
       await fetchTickets(); // Refresh states
 
     } catch (e) {
