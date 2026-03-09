@@ -16,17 +16,12 @@ export default function TotemPage() {
     setIsGenerating(true);
 
     try {
-      // Get the queue ID based on type (simulated here since we mock queues initially)
       const queueNames = {
-        'CG': 'Clínico Geral',
-        'PD': 'Pediatria',
-        'EX': 'Exames'
+        CG: 'Clínico Geral',
+        PD: 'Pediatria',
+        EX: 'Exames',
       };
 
-      // In a real app we'd fetch the queue by name. For now, we mock the ticket number logic
-      // to ensure uniqueness we'll use a random component or fetch the last one.
-      const randomId = Math.floor(Math.random() * 999).toString().padStart(3, '0');
-      const ticketNumber = `${type}-${randomId}`;
       const now = new Date();
 
       const { data: queueData } = await supabase
@@ -52,9 +47,9 @@ export default function TotemPage() {
       }
 
       setGeneratedTicket({
-        number: ticketNumber,
+        number: displayTicket,
         time: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        date: now.toLocaleDateString('pt-BR')
+        date: now.toLocaleDateString('pt-BR'),
       });
 
     } catch (e) {
