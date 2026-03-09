@@ -41,7 +41,7 @@ export default function TotemPage() {
           .insert({
             queue_id: queueData.id,
             ticket_number: ticketNumber,
-            status: 'waiting'
+            status: 'aguardando'
           });
 
         if (error) {
