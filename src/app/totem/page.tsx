@@ -16,11 +16,10 @@ export default function TotemPage() {
     setIsGenerating(true);
 
     try {
-      // Get the queue ID based on type (simulated here since we mock queues initially)
       const queueNames = {
-        'CG': 'Clínico Geral',
-        'PD': 'Pediatria',
-        'EX': 'Exames'
+        CG: 'Clínico Geral',
+        PD: 'Pediatria',
+        EX: 'Exames',
       };
 
       const now = new Date();
@@ -69,7 +68,7 @@ export default function TotemPage() {
       setGeneratedTicket({
         number: displayTicket,
         time: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        date: now.toLocaleDateString('pt-BR')
+        date: now.toLocaleDateString('pt-BR'),
       });
 
     } catch (e) {
