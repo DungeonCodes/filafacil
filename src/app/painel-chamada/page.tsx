@@ -62,7 +62,7 @@ export default function PainelChamadaPage() {
     const { data: waitingData } = await supabase
       .from('tickets')
       .select('*')
-      .eq('status', 'waiting')
+      .in('status', ['waiting', 'aguardando'])
       .order('created_at', { ascending: true })
       .limit(4);
 
