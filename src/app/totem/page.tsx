@@ -23,6 +23,7 @@ export default function TotemPage() {
       };
 
       const now = new Date();
+      const prefix = type;
 
       const { data: queueData } = await supabase
         .from('queues')
@@ -35,32 +36,27 @@ export default function TotemPage() {
         return;
       }
 
-      const { data: lastTicketData, error: lastTicketError } = await supabase
+      const { data: lastTicket } = await supabase
         .from('tickets')
         .select('ticket_number')
         .eq('queue_id', queueData.id)
-        .eq('prefix', type)
+        .eq('prefix', prefix)
         .order('ticket_number', { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (lastTicketError) {
-        console.error('Error fetching last ticket:', lastTicketError);
-        alert('Erro ao consultar fila, tente novamente.');
-        return;
-      }
-
-      const nextTicketNumber = Number(lastTicketData?.ticket_number ?? 0) + 1;
-      const displayTicket = `${type}-${String(nextTicketNumber).padStart(3, '0')}`;
+      const nextNumber = (lastTicket?.ticket_number ?? 0) + 1;
+      const ticketNumber = nextNumber;
+      const displayTicket = `${prefix}-${String(nextNumber).padStart(3, '0')}`;
 
       const { error } = await supabase
         .from('tickets')
         .insert({
           queue_id: queueData.id,
-          ticket_number: nextTicketNumber,
-          prefix: type,
+          ticket_number: ticketNumber,
+          prefix: prefix,
           priority_type: 'normal',
-          status: 'waiting',
+          status: 'aguardando',
         });
 
       if (error) {
