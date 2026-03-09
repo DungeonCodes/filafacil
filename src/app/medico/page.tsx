@@ -4,17 +4,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { PageHeader } from '@/components/ui/page-header';
 
-type PriorityType = 'normal' | 'preferencial';
+type Specialty = 'Clínico Geral' | 'Pediatria' | 'Exames';
 
-type QueueRecord = { id: string };
 type TicketRecord = {
   id: string;
-  ticket_number: string | number;
-  prefix?: string | null;
-  priority_type?: PriorityType;
+  ticket_number: string;
   status: string;
   created_at?: string;
-  issued_at?: string;
 };
 
 type CallRecord = {
@@ -22,63 +18,39 @@ type CallRecord = {
   called_at: string;
   room_label?: string | null;
   ticket_id?: string;
-  tickets?:
-    | {
-        ticket_number: string | number;
-        prefix?: string | null;
-      }
-    | {
-        ticket_number: string | number;
-        prefix?: string | null;
-      }[]
-    | null;
+  tickets?: { ticket_number: string } | { ticket_number: string }[] | null;
 };
 
-function formatTicketLabel(ticket: Pick<TicketRecord, 'ticket_number' | 'prefix'> | null | undefined) {
-  if (!ticket) return '---';
-
-  if (ticket.prefix && typeof ticket.ticket_number === 'number') {
-    return `${ticket.prefix}${String(ticket.ticket_number).padStart(3, '0')}`;
-  }
-
-  return String(ticket.ticket_number);
-}
-
 const consultorioOptions = Array.from({ length: 10 }, (_, index) => String(index + 1).padStart(3, '0'));
+const specialtyOptions: Specialty[] = ['Clínico Geral', 'Pediatria', 'Exames'];
+
+function normalizeCallTicket(call: CallRecord) {
+  if (!call.tickets) return null;
+  return Array.isArray(call.tickets) ? call.tickets[0] ?? null : call.tickets;
+}
 
 export default function MedicoPage() {
   const [consultorio, setConsultorio] = useState('001');
-  const [nextNormal, setNextNormal] = useState<TicketRecord | null>(null);
-  const [nextPreferencial, setNextPreferencial] = useState<TicketRecord | null>(null);
+  const [specialty, setSpecialty] = useState<Specialty>('Clínico Geral');
+  const [nextTicket, setNextTicket] = useState<TicketRecord | null>(null);
   const [recentCalls, setRecentCalls] = useState<CallRecord[]>([]);
-  const [feedback, setFeedback] = useState<string>('');
-  const [error, setError] = useState<string>('');
-  const [loadingType, setLoadingType] = useState<PriorityType | null>(null);
+  const [feedback, setFeedback] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const roomLabel = useMemo(() => `Consultório ${consultorio}`, [consultorio]);
 
   const getQueueId = async () => {
-    const { data: queueByCode } = await supabase.from('queues').select('id').eq('code', 'GERAL').maybeSingle();
-    if (queueByCode) return (queueByCode as QueueRecord).id;
-
-    const { data: queueByName } = await supabase
-      .from('queues')
-      .select('id')
-      .in('name', ['GERAL', 'Clínico Geral'])
-      .limit(1)
-      .maybeSingle();
-
-    return (queueByName as QueueRecord | null)?.id ?? null;
+    const { data } = await supabase.from('queues').select('id').eq('name', specialty).maybeSingle();
+    return (data as { id: string } | null)?.id ?? null;
   };
 
-  const fetchNextTicket = async (queueId: string, priorityType: PriorityType) => {
+  const fetchNextTicket = async (queueId: string) => {
     const { data } = await supabase
       .from('tickets')
-      .select('id,ticket_number,prefix,priority_type,status,created_at,issued_at')
+      .select('id,ticket_number,status,created_at')
       .eq('queue_id', queueId)
-      .eq('priority_type', priorityType)
-      .in('status', ['aguardando', 'waiting'])
-      .order('issued_at', { ascending: true })
+      .eq('status', 'waiting')
       .order('created_at', { ascending: true })
       .limit(1)
       .maybeSingle();
@@ -89,72 +61,59 @@ export default function MedicoPage() {
   const fetchRecentCalls = async () => {
     const { data } = await supabase
       .from('calls')
-      .select('id,called_at,room_label,ticket_id,tickets(ticket_number,prefix)')
+      .select('id,called_at,room_label,ticket_id,tickets(ticket_number)')
       .eq('room_label', roomLabel)
       .order('called_at', { ascending: false })
       .limit(5);
 
-    const parsedCalls = ((data as CallRecord[]) ?? []).map((call) => ({
-      ...call,
-      tickets: Array.isArray(call.tickets) ? call.tickets[0] ?? null : call.tickets ?? null,
-    }));
-
-    setRecentCalls(parsedCalls.filter((call) => Boolean(call.ticket_id)));
+    setRecentCalls((data as CallRecord[]) ?? []);
   };
 
   const refreshData = async () => {
     const queueId = await getQueueId();
-
     if (!queueId) {
-      setError('Fila GERAL não encontrada. Verifique o cadastro da fila.');
-      setNextNormal(null);
-      setNextPreferencial(null);
+      setNextTicket(null);
+      setError('Especialidade não encontrada nas filas.');
       return;
     }
 
     setError('');
-
-    const [normal, preferencial] = await Promise.all([
-      fetchNextTicket(queueId, 'normal'),
-      fetchNextTicket(queueId, 'preferencial'),
-    ]);
-
-    setNextNormal(normal);
-    setNextPreferencial(preferencial);
+    const upcoming = await fetchNextTicket(queueId);
+    setNextTicket(upcoming);
     await fetchRecentCalls();
   };
 
   useEffect(() => {
     refreshData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [consultorio]);
+  }, [consultorio, specialty]);
 
-  const handleCallTicket = async (priorityType: PriorityType) => {
-    setLoadingType(priorityType);
+  const handleCall = async () => {
+    setIsLoading(true);
     setFeedback('');
     setError('');
 
     try {
       const queueId = await getQueueId();
       if (!queueId) {
-        setError('Fila GERAL não encontrada.');
+        setError('Fila da especialidade não encontrada.');
         return;
       }
 
-      const ticket = await fetchNextTicket(queueId, priorityType);
+      const ticket = await fetchNextTicket(queueId);
       if (!ticket) {
-        setError(`Não há senha ${priorityType} aguardando no momento.`);
+        setError(`Não há senha aguardando para ${specialty}.`);
         return;
       }
 
       const { error: updateError } = await supabase
         .from('tickets')
-        .update({ status: 'chamada', called_at: new Date().toISOString() })
+        .update({ status: 'called', called_at: new Date().toISOString() })
         .eq('id', ticket.id)
-        .in('status', ['aguardando', 'waiting']);
+        .eq('status', 'waiting');
 
       if (updateError) {
-        setError('Não foi possível atualizar a senha para chamada.');
+        setError('Não foi possível atualizar o status da senha.');
         return;
       }
 
@@ -168,65 +127,69 @@ export default function MedicoPage() {
       if (callError) {
         setError('Senha chamada, mas falhou ao registrar destino.');
       } else {
-        setFeedback(`${formatTicketLabel(ticket)} chamada para ${roomLabel}.`);
+        setFeedback(`${ticket.ticket_number} chamada para ${roomLabel}.`);
       }
 
       await refreshData();
     } finally {
-      setLoadingType(null);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <PageHeader title="Tela do Médico" description="Selecione o consultório e chame a próxima senha para atendimento." />
+      <PageHeader title="Tela do Médico" description="Selecione especialidade e consultório para chamar a próxima senha." />
+
+      <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2">
+        <div>
+          <label htmlFor="specialty" className="mb-2 block text-base font-semibold text-slate-900">
+            Especialidade / categoria
+          </label>
+          <select
+            id="specialty"
+            value={specialty}
+            onChange={(event) => setSpecialty(event.target.value as Specialty)}
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
+          >
+            {specialtyOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="consultorio" className="mb-2 block text-base font-semibold text-slate-900">
+            Consultório
+          </label>
+          <select
+            id="consultorio"
+            value={consultorio}
+            onChange={(event) => setConsultorio(event.target.value)}
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
+          >
+            {consultorioOptions.map((option) => (
+              <option key={option} value={option}>
+                Consultório {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
+
+      <button
+        type="button"
+        onClick={handleCall}
+        disabled={isLoading}
+        className="w-full rounded-2xl bg-brand-600 px-6 py-6 text-xl font-bold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-brand-400 disabled:cursor-not-allowed disabled:bg-slate-400"
+      >
+        {isLoading ? 'Chamando...' : 'Chamar próxima senha'}
+      </button>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <label htmlFor="consultorio" className="mb-2 block text-base font-semibold text-slate-900">
-          Consultório
-        </label>
-        <select
-          id="consultorio"
-          value={consultorio}
-          onChange={(event) => setConsultorio(event.target.value)}
-          className="w-full rounded-xl border border-slate-300 px-4 py-3 text-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
-        >
-          {consultorioOptions.map((option) => (
-            <option key={option} value={option}>
-              Consultório {option}
-            </option>
-          ))}
-        </select>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2">
-        <button
-          type="button"
-          onClick={() => handleCallTicket('normal')}
-          disabled={Boolean(loadingType)}
-          className="rounded-2xl bg-brand-600 px-6 py-6 text-xl font-bold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-brand-400 disabled:cursor-not-allowed disabled:bg-slate-400"
-        >
-          {loadingType === 'normal' ? 'Chamando...' : 'Chamar próxima normal'}
-        </button>
-        <button
-          type="button"
-          onClick={() => handleCallTicket('preferencial')}
-          disabled={Boolean(loadingType)}
-          className="rounded-2xl bg-emerald-600 px-6 py-6 text-xl font-bold text-white transition hover:bg-emerald-700 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:cursor-not-allowed disabled:bg-slate-400"
-        >
-          {loadingType === 'preferencial' ? 'Chamando...' : 'Chamar próxima preferencial'}
-        </button>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2">
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Próxima senha normal</h2>
-          <p className="mt-3 text-5xl font-black text-slate-900">{formatTicketLabel(nextNormal)}</p>
-        </article>
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Próxima senha preferencial</h2>
-          <p className="mt-3 text-5xl font-black text-slate-900">{formatTicketLabel(nextPreferencial)}</p>
-        </article>
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Próxima senha ({specialty})</h2>
+        <p className="mt-3 text-5xl font-black text-slate-900">{nextTicket?.ticket_number ?? '---'}</p>
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -238,7 +201,7 @@ export default function MedicoPage() {
           <ul className="space-y-3" aria-live="polite">
             {recentCalls.map((call) => (
               <li key={call.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-                <span className="text-lg font-semibold text-slate-900">{formatTicketLabel(call.tickets as TicketRecord)}</span>
+                <span className="text-lg font-semibold text-slate-900">{normalizeCallTicket(call)?.ticket_number ?? '---'}</span>
                 <span className="text-sm text-slate-600">
                   {new Date(call.called_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                 </span>
