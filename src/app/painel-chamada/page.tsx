@@ -16,13 +16,8 @@ type CallItem = {
   called_at: string;
   called_by?: string | null;
   room_label?: string | null;
-  tickets?: Ticket | Ticket[] | null;
+  ticket_id?: string | null;
 };
-
-function normalizeTicket(call: CallItem): Ticket | null {
-  if (!call.tickets) return null;
-  return Array.isArray(call.tickets) ? call.tickets[0] ?? null : call.tickets;
-}
 
 export default function PainelChamadaPage() {
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
@@ -39,24 +34,51 @@ export default function PainelChamadaPage() {
   }, [currentDestination]);
 
   const fetchTickets = async () => {
-    const { data: callsData } = await supabase
+    const { data: callsData, error: callsError } = await supabase
       .from('calls')
-      .select('id,called_at,called_by,room_label,tickets(id,ticket_number,status,created_at)')
+      .select('*')
       .order('called_at', { ascending: false })
       .limit(6);
 
-    const parsedCalls = ((callsData as CallItem[]) ?? []).map((call) => ({
-      ...call,
-      ticket: normalizeTicket(call),
-    }));
+    if (callsError) {
+      console.error('Erro ao consultar chamadas:', callsError);
+      setLastCalls([]);
+      setCurrentTicket(null);
+      setCurrentDestination('Sala 1');
+    } else {
+      const calls = (callsData as CallItem[]) ?? [];
+      const ticketIds = calls.map((call) => call.ticket_id).filter((id): id is string => Boolean(id));
 
-    const validCalls = parsedCalls.filter((call) => Boolean(call.ticket));
-    setLastCalls(validCalls);
+      let ticketsById = new Map<string, Ticket>();
+      if (ticketIds.length > 0) {
+        const { data: ticketsData, error: ticketsError } = await supabase
+          .from('tickets')
+          .select('id,ticket_number,status,created_at')
+          .in('id', ticketIds);
 
-    const latestCall = validCalls[0];
-    if (latestCall?.ticket) {
-      setCurrentTicket(latestCall.ticket);
-      setCurrentDestination(latestCall.room_label ?? latestCall.called_by ?? 'Sala 1');
+        if (ticketsError) {
+          console.error('Erro ao consultar tickets das chamadas:', ticketsError);
+        } else {
+          ticketsById = new Map(((ticketsData as Ticket[]) ?? []).map((ticket) => [ticket.id, ticket]));
+        }
+      }
+
+      const parsedCalls = calls.map((call) => ({
+        ...call,
+        ticket: call.ticket_id ? (ticketsById.get(call.ticket_id) ?? null) : null,
+      }));
+
+      const validCalls = parsedCalls.filter((call) => Boolean(call.ticket));
+      setLastCalls(validCalls);
+
+      const latestCall = validCalls[0];
+      if (latestCall?.ticket) {
+        setCurrentTicket(latestCall.ticket);
+        setCurrentDestination(latestCall.room_label ?? latestCall.called_by ?? 'Sala 1');
+      } else {
+        setCurrentTicket(null);
+        setCurrentDestination('Sala 1');
+      }
     }
 
     const { data: waitingData } = await supabase
