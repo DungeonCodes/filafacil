@@ -12,31 +12,43 @@ type Ticket = {
   created_at: string;
 };
 
+type LatestCall = {
+  called_at: string;
+  room_label?: string | null;
+  tickets?: Ticket | null;
+};
+
 export default function PainelChamadaPage() {
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
   const [nextTickets, setNextTickets] = useState<Ticket[]>([]);
   const [time, setTime] = useState<string>('');
+  const [currentDestination, setCurrentDestination] = useState<string>('Sala 1');
 
   const fetchTickets = async () => {
-    // Fetch last called ticket
-    const { data: calledData } = await supabase
-      .from('tickets')
-      .select('*')
-      .eq('status', 'called')
+    // Fetch last called ticket based on call log (supports room_label from atendente/médico)
+    const { data: latestCallData } = await supabase
+      .from('calls')
+      .select('called_at,room_label,tickets(id,ticket_number,status,created_at)')
       .order('called_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (calledData && calledData.id !== currentTicket?.id) {
-      setCurrentTicket(calledData);
-      // Accessibility audio cue would go here (e.g., play chime)
+    const latestCall = latestCallData as LatestCall | null;
+
+    if (latestCall?.tickets) {
+      if (latestCall.tickets.id !== currentTicket?.id) {
+        setCurrentTicket(latestCall.tickets);
+        // Accessibility audio cue would go here (e.g., play chime)
+      }
+
+      setCurrentDestination(latestCall.room_label ?? 'Sala 1');
     }
 
     // Fetch next waiting tickets (limit 4 for display)
     const { data: waitingData } = await supabase
       .from('tickets')
       .select('*')
-      .eq('status', 'waiting')
+      .in('status', ['waiting', 'aguardando'])
       .order('created_at', { ascending: true })
       .limit(4);
 
@@ -112,7 +124,7 @@ export default function PainelChamadaPage() {
                 <div className="text-left">
                   <p className="text-slate-500 font-semibold uppercase tracking-wider text-xl">Local de Atendimento</p>
                   <h2 className="text-medical-dark text-5xl font-extrabold flex items-center gap-4">
-                    Sala 1 <span className="bg-medical-accent text-white text-sm px-3 py-1 rounded-full uppercase tracking-wider">Atendente</span>
+                    {currentDestination} <span className="bg-medical-accent text-white text-sm px-3 py-1 rounded-full uppercase tracking-wider">Atendimento</span>
                   </h2>
                 </div>
               </div>
