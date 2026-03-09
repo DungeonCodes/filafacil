@@ -30,43 +30,20 @@ export default function TotemPage() {
         .eq('name', queueNames[type])
         .single();
 
-      if (!queueData) {
-        alert('Fila não encontrada para a especialidade selecionada.');
-        return;
-      }
+      if (queueData) {
+        const { error } = await supabase
+          .from('tickets')
+          .insert({
+            queue_id: queueData.id,
+            ticket_number: ticketNumber,
+            status: 'aguardando'
+          });
 
-      const { data: lastTicketData, error: lastTicketError } = await supabase
-        .from('tickets')
-        .select('ticket_number')
-        .eq('queue_id', queueData.id)
-        .eq('prefix', type)
-        .order('ticket_number', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (lastTicketError) {
-        console.error('Error fetching last ticket:', lastTicketError);
-        alert('Erro ao consultar fila, tente novamente.');
-        return;
-      }
-
-      const nextTicketNumber = Number(lastTicketData?.ticket_number ?? 0) + 1;
-      const displayTicket = `${type}-${String(nextTicketNumber).padStart(3, '0')}`;
-
-      const { error } = await supabase
-        .from('tickets')
-        .insert({
-          queue_id: queueData.id,
-          ticket_number: nextTicketNumber,
-          prefix: type,
-          priority_type: 'normal',
-          status: 'waiting',
-        });
-
-      if (error) {
-        console.error('Error creating ticket:', error);
-        alert('Erro ao gerar senha, tente novamente.');
-        return;
+        if (error) {
+          console.error("Error creating ticket:", error);
+          alert("Erro ao gerar senha, tente novamente.");
+          return;
+        }
       }
 
       setGeneratedTicket({
