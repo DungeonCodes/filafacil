@@ -59,6 +59,7 @@ export default function TotemPage() {
           queue_id: queueData.id,
           ticket_number: nextTicketNumber,
           prefix: type,
+          priority_type: 'normal',
           status: 'waiting',
         });
 
